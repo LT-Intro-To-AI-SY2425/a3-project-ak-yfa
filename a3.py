@@ -11,11 +11,7 @@ def get_artist(song: Tuple[str, str, int, List[str]]) -> str:
 
 def get_year(song: Tuple[str, str, int, List[str]]) -> int:
     return song[2]
-
-def get_genres(song: Tuple[str, str, int, List[str]]) -> List[str]:
-    return song[3]
-
-# Functions to find songs based on different criteria
+# division
 def title_by_year(matches: List[str]) -> List[str]:
     year = int(matches[0])
     return [get_title(song) for song in song_db if get_year(song) == year]
@@ -41,23 +37,12 @@ def title_by_artist(matches: List[str]) -> List[str]:
     artist = matches[0]
     return [get_title(song) for song in song_db if get_artist(song) == artist]
 
-def genres_by_title(matches: List[str]) -> List[str]:
-    title = matches[0]
-    for song in song_db:
-        if get_title(song) == title:
-            return get_genres(song)
-    return []
-
 def year_by_title(matches: List[str]) -> List[int]:
     title = matches[0]
     for song in song_db:
         if get_title(song) == title:
             return [get_year(song)]
     return []
-
-def title_by_genre(matches: List[str]) -> List[str]:
-    genre = matches[0]
-    return [get_title(song) for song in song_db if genre in get_genres(song)]
 
 def bye_action(dummy: List[str]) -> None:
     raise KeyboardInterrupt
@@ -70,9 +55,7 @@ pa_list: List[Tuple[List[str], Callable[[List[str]], List[Any]]]] = [
     (str.split("what songs were made after _"), title_after_year),
     (str.split("who is the artist of %"), artist_by_title),
     (str.split("what songs were performed by %"), title_by_artist),
-    (str.split("what genres does % belong to"), genres_by_title),
     (str.split("when was % released"), year_by_title),
-    (str.split("what songs belong to the genre %"), title_by_genre),
     (["bye"], bye_action),
 ]
 
@@ -119,14 +102,8 @@ if __name__ == "__main__":
     assert isinstance(title_by_artist(["artist1"]), list), "title_by_artist not returning a list"
     assert sorted(title_by_artist(["artist1"])) == sorted(["song1"]), "failed title_by_artist test"
 
-    assert isinstance(genres_by_title(["song1"]), list), "genres_by_title not returning a list"
-    assert sorted(genres_by_title(["song1"])) == sorted(["pop", "rock"]), "failed genres_by_title test"
-
     assert isinstance(year_by_title(["song1"]), list), "year_by_title not returning a list"
     assert sorted(year_by_title(["song1"])) == sorted([2014]), "failed year_by_title test"
-
-    assert isinstance(title_by_genre(["rock"]), list), "title_by_genre not returning a list"
-    assert sorted(title_by_genre(["rock"])) == sorted(["song1", "song2"]), "failed title_by_genre test"
 
     assert sorted(search_pa_list(["hi", "there"])) == sorted(["I don't understand"]), "failed search_pa_list test 1"
     assert sorted(search_pa_list(["what", "songs", "were", "made", "in", "2014"])) == sorted(["song1", "song2"]), "failed search_pa_list test 2"
